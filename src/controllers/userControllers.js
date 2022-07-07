@@ -8,9 +8,9 @@ const customError = require("../utils/customError");
 
 const userLogin = async (req, res, next) => {
   debug(chalk.yellowBright("login request received"));
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  const user = await User.findOne({ username });
+  const user = await User.findOne({ email });
 
   if (!user) {
     const error = customError(
@@ -42,7 +42,7 @@ const userLogin = async (req, res, next) => {
 
 const userRegister = async (req, res, next) => {
   try {
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
 
     const user = await User.findOne({ username });
 
@@ -56,6 +56,7 @@ const userRegister = async (req, res, next) => {
 
     const newUser = {
       username,
+      email,
       password: encryptedPassword,
     };
 
