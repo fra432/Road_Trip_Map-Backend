@@ -13,8 +13,13 @@ const LocationSchema = new Schema({
     description: {
       type: String,
     },
-    image: {
-      type: String,
+    images: {
+      type: [
+        {
+          type: String,
+        },
+      ],
+      default: [],
     },
   },
   geometry: {
