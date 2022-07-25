@@ -4,6 +4,7 @@ const path = require("path");
 const {
   getUserLocations,
   addLocation,
+  deleteLocation,
 } = require("../controllers/locationsControllers");
 const firebaseImageStore = require("../server/middlewares/firebaseImageStore");
 const saveImages = require("../server/middlewares/saveImages");
@@ -26,5 +27,7 @@ locationsRouter.post(
   firebaseImageStore,
   addLocation
 );
+
+locationsRouter.delete("/:locationId", deleteLocation);
 
 module.exports = locationsRouter;
