@@ -67,4 +67,37 @@ const addLocation = async (req, res, next) => {
   }
 };
 
-module.exports = { getUserLocations, addLocation };
+const deleteLocation = async (req, res, next) => {
+  debug(chalk.yellowBright("Request to delete a location received"));
+  const { userId } = req.body;
+  const { locationId } = req.params;
+
+  const deletedLocation = await Location.findByIdAndDelete(locationId);
+  if (deletedLocation) {
+    debug(
+      chalk.greenBright(
+        `Location ${locationId} deleted from locations database`
+      )
+    );
+
+    await User.findByIdAndUpdate(
+      userId,
+      {
+        $pull: { "locations.features": locationId },
+      },
+      { new: true }
+    );
+
+    debug(
+      chalk.greenBright(`Location ${locationId} deleted from user's locations`)
+    );
+
+    res.status(200).json({ deleted_location: deletedLocation });
+    return;
+  }
+
+  const error = customError(404, "Bad request", "Location id not found");
+  next(error);
+};
+
+module.exports = { getUserLocations, addLocation, deleteLocation };

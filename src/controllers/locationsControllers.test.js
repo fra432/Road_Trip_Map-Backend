@@ -1,7 +1,11 @@
 const { mockLocations } = require("../mocks/locationsMock");
 const Location = require("../models/Location");
 const User = require("../models/User");
-const { getUserLocations, addLocation } = require("./locationsControllers");
+const {
+  getUserLocations,
+  addLocation,
+  deleteLocation,
+} = require("./locationsControllers");
 
 describe("Given a getUserLocation function", () => {
   const req = {
@@ -167,6 +171,54 @@ describe("Given a addLocation function", () => {
       User.findById = jest.fn().mockRejectedValue();
 
       await addLocation(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+});
+
+describe("Given a delteLocation function", () => {
+  const req = {
+    params: {
+      locationId: "1",
+    },
+    body: {
+      userId: "1",
+    },
+  };
+
+  const res = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  };
+  describe("When it receives a request with a locationId present in the database and a valid userId", () => {
+    test("Then it should call the responses's status method with 200 and the json method with the deleted location", async () => {
+      const expectedStatusResponse = 200;
+      const expectedJsonResponse = {
+        deleted_location: mockLocations[0],
+      };
+
+      Location.findByIdAndDelete = jest
+        .fn()
+        .mockResolvedValue(mockLocations[0]);
+      User.findByIdAndUpdate = jest.fn().mockResolvedValue(true);
+
+      await deleteLocation(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(expectedStatusResponse);
+      expect(res.json).toHaveBeenCalledWith(expectedJsonResponse);
+    });
+  });
+
+  describe("When it receives a request with a locationId not present in the database", () => {
+    test("Then it should call the next received function with an error 'Location id not found'", async () => {
+      const expectedErrorMessage = "Location id not found";
+      const error = new Error(expectedErrorMessage);
+      const next = jest.fn();
+
+      Location.findByIdAndDelete = jest.fn().mockResolvedValue(false);
+
+      await deleteLocation(req, res, next);
 
       expect(next).toHaveBeenCalledWith(error);
     });
