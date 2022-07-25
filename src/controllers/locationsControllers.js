@@ -6,6 +6,8 @@ const User = require("../models/User");
 const customError = require("../utils/customError");
 
 const getUserLocations = async (req, res, next) => {
+  debug(chalk.yellowBright("Request to get user's locations received"));
+
   try {
     const { userId } = req.params;
 
@@ -21,7 +23,7 @@ const getUserLocations = async (req, res, next) => {
 
     res.status(200).json({ features });
   } catch {
-    const error = customError(400, "Bad Request", "Locations not found");
+    const error = customError(400, "Bad Request", "User not found");
     next(error);
   }
 };
