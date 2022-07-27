@@ -9,9 +9,7 @@ const {
 
 describe("Given a getUserLocation function", () => {
   const req = {
-    params: {
-      userId: "1",
-    },
+    userId: "1",
   };
 
   const res = {
@@ -60,14 +58,12 @@ describe("Given a addLocation function", () => {
   describe("When it receives a request with a userId present in the database in the params e all the location info in the body", () => {
     test("Then it should call the responses status method with 200 and the json methos with the new location added", async () => {
       const req = {
-        file: "picture.jpg",
+        files: ["picture.jpg"],
         firebaseImagesUrls: ["firebasepicture"],
-        params: {
-          userId: "1",
-        },
+        userId: "1",
         body: {
-          lat: 41.3787636,
-          lng: 2.1690454,
+          latitude: 41.3787636,
+          longitude: 2.1690454,
           description:
             "Huge bronze sculpture of a cat with a bizarre expression by the well-known artist Fernando Botero",
           name: "El Gato de Botlero",
@@ -104,16 +100,15 @@ describe("Given a addLocation function", () => {
   describe("When it receives a request with a userId present in the database in the params e all the location info in the body but without file or files", () => {
     test("Then it should call the responses status method with 200 and the json methos with the new location added", async () => {
       const req = {
-        params: {
-          userId: "1",
-        },
+        userId: "1",
         body: {
-          lat: 41.3787636,
-          lng: 2.1690454,
+          latitude: 41.3787636,
+          longitude: 2.1690454,
           description:
             "Huge bronze sculpture of a cat with a bizarre expression by the well-known artist Fernando Botero",
           name: "El Gato de Botlero",
         },
+        files: [],
       };
 
       const res = {
@@ -147,12 +142,10 @@ describe("Given a addLocation function", () => {
       const req = {
         file: "picture.jpg",
         firebaseImagesUrls: ["firebasepicture"],
-        params: {
-          userId: "1",
-        },
+        userId: "1",
         body: {
-          lat: 41.3787636,
-          lng: 2.1690454,
+          latitude: 41.3787636,
+          longitude: 2.1690454,
           description:
             "Huge bronze sculpture of a cat with a bizarre expression by the well-known artist Fernando Botero",
           name: "El Gato de Botlero",
@@ -182,15 +175,14 @@ describe("Given a delteLocation function", () => {
     params: {
       locationId: "1",
     },
-    body: {
-      userId: "1",
-    },
+    userId: "1",
   };
 
   const res = {
     status: jest.fn().mockReturnThis(),
     json: jest.fn(),
   };
+
   describe("When it receives a request with a locationId present in the database and a valid userId", () => {
     test("Then it should call the responses's status method with 200 and the json method with the deleted location", async () => {
       const expectedStatusResponse = 200;

@@ -9,7 +9,7 @@ const getUserLocations = async (req, res, next) => {
   debug(chalk.yellowBright("Request to get user's locations received"));
 
   try {
-    const { userId } = req.params;
+    const { userId } = req;
 
     const {
       locations: { features },
@@ -32,9 +32,9 @@ const addLocation = async (req, res, next) => {
   debug(chalk.yellowBright("Request to add a location received"));
 
   try {
-    const { userId } = req.params;
-    const { lat, lng, description, name } = req.body;
-    const { file, files, firebaseImagesUrls } = req;
+    const { userId } = req;
+    const { latitude, longitude, description, name } = req.body;
+    const { files, firebaseImagesUrls } = req;
 
     const user = await User.findById(userId);
 
@@ -43,11 +43,11 @@ const addLocation = async (req, res, next) => {
       properties: {
         name,
         description,
-        images: file || files ? [...firebaseImagesUrls] : [],
+        images: files.length !== 0 ? [...firebaseImagesUrls] : [],
       },
       geometry: {
         type: "Point",
-        coordinates: [lat, lng],
+        coordinates: [+latitude, +longitude],
       },
     };
 
@@ -69,7 +69,7 @@ const addLocation = async (req, res, next) => {
 
 const deleteLocation = async (req, res, next) => {
   debug(chalk.yellowBright("Request to delete a location received"));
-  const { userId } = req.body;
+  const { userId } = req;
   const { locationId } = req.params;
 
   const deletedLocation = await Location.findByIdAndDelete(locationId);

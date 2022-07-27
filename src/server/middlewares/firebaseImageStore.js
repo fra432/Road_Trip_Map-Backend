@@ -29,9 +29,9 @@ const saveImage = async (storage, file, fileName) => {
 };
 
 const firebaseImageStore = async (req, res, next) => {
-  const { file, files } = req;
+  const { files } = req;
 
-  if (file || files) {
+  if (files.length !== 0) {
     const storage = getStorage(firebaseApp);
     req.firebaseImagesUrls = [];
 

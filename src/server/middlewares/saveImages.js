@@ -2,12 +2,11 @@ const fs = require("fs");
 const path = require("path");
 
 const saveImages = (req, res, next) => {
-  const { file, files } = req;
+  const { files } = req;
   req.imagePaths = [];
 
-  if (files || file) {
-    const filesToUpload = file ? [file] : files;
-    filesToUpload.forEach((fileToUpload) => {
+  if (files.length !== 0) {
+    files.forEach((fileToUpload) => {
       const newFileName = `${Date.now()}-${fileToUpload.originalname}`;
       fs.rename(
         path.join("uploads", "images", fileToUpload.filename),
