@@ -6,6 +6,7 @@ const {
   addLocation,
   deleteLocation,
 } = require("../controllers/locationsControllers");
+const auth = require("../server/middlewares/auth");
 const firebaseImageStore = require("../server/middlewares/firebaseImageStore");
 const saveImages = require("../server/middlewares/saveImages");
 
@@ -18,10 +19,11 @@ const uploadLocationImages = multer({
 
 const locationsRouter = express.Router();
 
-locationsRouter.get("/:userId", getUserLocations);
+locationsRouter.get("/", auth, getUserLocations);
 
 locationsRouter.post(
-  "/:userId",
+  "/",
+  auth,
   uploadLocationImages.array("image"),
   saveImages,
   firebaseImageStore,
