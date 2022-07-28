@@ -5,6 +5,7 @@ const {
   getUserLocations,
   addLocation,
   deleteLocation,
+  getLocationById,
 } = require("./locationsControllers");
 
 describe("Given a getUserLocation function", () => {
@@ -211,6 +212,49 @@ describe("Given a delteLocation function", () => {
       Location.findByIdAndDelete = jest.fn().mockResolvedValue(false);
 
       await deleteLocation(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+});
+
+describe("Given a getLocationById function", () => {
+  const req = {
+    params: {
+      locationId: "1",
+    },
+  };
+
+  const res = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+  };
+
+  describe("When it receives a request with a locationId present in the database", () => {
+    test("Then it should call the responses's status method with 200 and the json method with the location", async () => {
+      const expectedStatusResponse = 200;
+      const expectedJsonResponse = {
+        location: mockLocations[0].properties,
+      };
+
+      Location.findById = jest.fn().mockResolvedValue(mockLocations[0]);
+
+      await getLocationById(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(expectedStatusResponse);
+      expect(res.json).toHaveBeenCalledWith(expectedJsonResponse);
+    });
+  });
+
+  describe("When it receives a request with a locationId not present in the database", () => {
+    test("Then it should call the next received function with an error 'Location not found'", async () => {
+      const expectedErrorMessage = "Location not found";
+      const error = new Error(expectedErrorMessage);
+      const next = jest.fn();
+
+      Location.findById = jest.fn().mockResolvedValue(false);
+
+      await getLocationById(req, res, next);
 
       expect(next).toHaveBeenCalledWith(error);
     });
