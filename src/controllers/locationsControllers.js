@@ -100,4 +100,24 @@ const deleteLocation = async (req, res, next) => {
   next(error);
 };
 
-module.exports = { getUserLocations, addLocation, deleteLocation };
+const getLocationById = async (req, res, next) => {
+  const { locationId } = req.params;
+  debug(chalk.yellowBright(`Request to get location ${locationId} received`));
+  try {
+    const {
+      properties: { name, description, images },
+    } = await Location.findById(locationId);
+    const location = { name, description, images };
+    res.status(200).json({ location });
+  } catch {
+    const error = customError(400, "Bad Request", "Location not found");
+    next(error);
+  }
+};
+
+module.exports = {
+  getUserLocations,
+  addLocation,
+  deleteLocation,
+  getLocationById,
+};
