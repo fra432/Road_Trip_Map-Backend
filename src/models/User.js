@@ -13,11 +13,8 @@ const UserSchema = new Schema({
     type: String,
     required: true,
   },
-  locations: {
-    features: {
-      type: [{ type: Schema.Types.ObjectId, ref: "Location" }],
-      default: [],
-    },
+  trips: {
+    type: [{ type: Schema.Types.ObjectId, ref: "Trip" }],
   },
 });
 
