@@ -105,9 +105,10 @@ const getLocationById = async (req, res, next) => {
   debug(chalk.yellowBright(`Request to get location ${locationId} received`));
   try {
     const {
+      id,
       properties: { name, description, images },
     } = await Location.findById(locationId);
-    const location = { name, description, images };
+    const location = { id, name, description, images };
     res.status(200).json({ location });
   } catch {
     const error = customError(400, "Bad Request", "Location not found");
