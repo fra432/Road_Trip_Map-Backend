@@ -21,4 +21,37 @@ const getUserTrips = async (req, res, next) => {
   }
 };
 
-module.exports = { getUserTrips };
+const addTrip = async (req, res, next) => {
+  debug(chalk.yellowBright("Request to add a trip received"));
+
+  try {
+    const { userId } = req;
+    const { name } = req.body;
+
+    const user = await User.findById(userId);
+
+    const newTrip = {
+      name,
+      owner: userId,
+      locations: {
+        features: [],
+      },
+    };
+
+    const addedTrip = await Trip.create(newTrip);
+    debug(chalk.greenBright("Location added to database"));
+
+    user.trips.push(addedTrip);
+
+    await User.findByIdAndUpdate(userId, user);
+
+    debug(chalk.greenBright("Trip added to user's trips"));
+
+    res.status(200).json({ new_trip: addedTrip });
+  } catch {
+    const error = customError(400, "Bad request", "Unable to add new trip");
+    next(error);
+  }
+};
+
+module.exports = { getUserTrips, addTrip };
