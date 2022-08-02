@@ -2,7 +2,6 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const {
-  getUserLocations,
   addLocation,
   deleteLocation,
   getLocationById,
@@ -20,10 +19,9 @@ const uploadLocationImages = multer({
 
 const locationsRouter = express.Router();
 
-locationsRouter.get("/", auth, getUserLocations);
 locationsRouter.get("/:locationId", auth, getLocationById);
 locationsRouter.post(
-  "/",
+  "/:tripId",
   auth,
   uploadLocationImages.array("image"),
   saveImages,

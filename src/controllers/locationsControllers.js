@@ -2,18 +2,18 @@ require("dotenv").config();
 const debug = require("debug")("recordswapp:controllers:recordsControllers");
 const chalk = require("chalk");
 const Location = require("../models/Location");
-const User = require("../models/User");
+const Trip = require("../models/Trip");
 const customError = require("../utils/customError");
 
-const getUserLocations = async (req, res, next) => {
+const getTripLocations = async (req, res, next) => {
   debug(chalk.yellowBright("Request to get user's locations received"));
 
   try {
-    const { userId } = req;
+    const { tripId } = req.params;
 
     const {
       locations: { features },
-    } = await User.findById(userId).populate({
+    } = await Trip.findById(tripId).populate({
       path: "locations",
       populate: {
         path: "features",
@@ -23,23 +23,23 @@ const getUserLocations = async (req, res, next) => {
 
     res.status(200).json({ features });
   } catch {
-    const error = customError(400, "Bad Request", "User not found");
+    const error = customError(400, "Bad Request", "Trip not found");
     next(error);
   }
 };
 
 const addLocation = async (req, res, next) => {
   debug(chalk.yellowBright("Request to add a location received"));
-
   try {
-    const { userId } = req;
+    const { tripId } = req.params;
     const { latitude, longitude, description, name } = req.body;
     const { files, firebaseImagesUrls } = req;
 
-    const user = await User.findById(userId);
+    const trip = await Trip.findById(tripId);
 
     const newLocation = {
       type: "Feature",
+      trip: tripId,
       properties: {
         name,
         description,
@@ -54,9 +54,9 @@ const addLocation = async (req, res, next) => {
     const addedLocation = await Location.create(newLocation);
     debug(chalk.greenBright("Location added to database"));
 
-    user.locations.features.push(addedLocation);
+    trip.locations.features.push(addedLocation);
 
-    await User.findByIdAndUpdate(userId, user);
+    await Trip.findByIdAndUpdate(tripId, trip);
 
     debug(chalk.greenBright("Location added to user locations"));
 
@@ -69,7 +69,6 @@ const addLocation = async (req, res, next) => {
 
 const deleteLocation = async (req, res, next) => {
   debug(chalk.yellowBright("Request to delete a location received"));
-  const { userId } = req;
   const { locationId } = req.params;
 
   const deletedLocation = await Location.findByIdAndDelete(locationId);
@@ -80,12 +79,14 @@ const deleteLocation = async (req, res, next) => {
       )
     );
 
-    await User.findByIdAndUpdate(
-      userId,
+    const tripId = deletedLocation.trip;
+
+    await Trip.findByIdAndUpdate(
+      tripId,
       {
         $pull: { "locations.features": locationId },
       },
-      { new: true }
+      { safe: true, multi: false }
     );
 
     debug(
@@ -117,7 +118,7 @@ const getLocationById = async (req, res, next) => {
 };
 
 module.exports = {
-  getUserLocations,
+  getTripLocations,
   addLocation,
   deleteLocation,
   getLocationById,
