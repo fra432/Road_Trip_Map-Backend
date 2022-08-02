@@ -5,6 +5,10 @@ const LocationSchema = new Schema({
     type: String,
     default: "Feature",
   },
+  trip: {
+    type: Schema.Types.ObjectId,
+    ref: "Trip",
+  },
   properties: {
     name: {
       type: String,
