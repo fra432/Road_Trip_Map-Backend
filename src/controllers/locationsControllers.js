@@ -12,6 +12,7 @@ const getTripLocations = async (req, res, next) => {
     const { tripId } = req.params;
 
     const {
+      name,
       locations: { features },
     } = await Trip.findById(tripId).populate({
       path: "locations",
@@ -21,7 +22,7 @@ const getTripLocations = async (req, res, next) => {
       },
     });
 
-    res.status(200).json({ features });
+    res.status(200).json({ name, tripId, features });
   } catch {
     const error = customError(400, "Bad Request", "Trip not found");
     next(error);

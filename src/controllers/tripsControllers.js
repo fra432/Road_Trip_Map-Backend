@@ -25,13 +25,14 @@ const addTrip = async (req, res, next) => {
   debug(chalk.yellowBright("Request to add a trip received"));
 
   try {
-    const { userId } = req;
+    const { userId, firebaseImagesUrls } = req;
     const { name } = req.body;
 
     const user = await User.findById(userId);
 
     const newTrip = {
       name,
+      image: firebaseImagesUrls ? firebaseImagesUrls[0] : "",
       owner: userId,
       locations: {
         features: [],
