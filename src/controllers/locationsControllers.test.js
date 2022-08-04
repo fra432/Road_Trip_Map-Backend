@@ -23,10 +23,16 @@ describe("Given a getTripLocations function", () => {
   describe("When it receives a tripId present in the databse in the request params", () => {
     test("Then it should call the response's status method with 200 and the json method with the user's locations", async () => {
       const expectedStatusResponse = 200;
-      const expectedJsonResponse = { features: mockLocations };
+      const expectedJsonResponse = {
+        name: "Barcelona",
+        tripId: "1",
+        features: mockLocations,
+      };
 
       Trip.findOne = jest.fn(() => ({
         populate: jest.fn().mockReturnValue({
+          name: "Barcelona",
+          tripId: "1",
           locations: {
             features: mockLocations,
           },

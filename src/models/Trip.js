@@ -9,6 +9,9 @@ const TripSchema = new Schema({
     type: String,
     required: true,
   },
+  image: {
+    type: String,
+  },
   locations: {
     features: {
       type: [{ type: Schema.Types.ObjectId, ref: "Location" }],
