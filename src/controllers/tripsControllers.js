@@ -55,4 +55,33 @@ const addTrip = async (req, res, next) => {
   }
 };
 
-module.exports = { getUserTrips, addTrip };
+const deleteTrip = async (req, res, next) => {
+  debug(chalk.yellowBright("Request to add a trip received"));
+
+  try {
+    const { userId } = req;
+    const { tripId } = req.params;
+
+    const deletedTrip = await Trip.findByIdAndDelete(tripId);
+    if (deletedTrip) {
+      debug(chalk.greenBright(`Trip ${tripId} deleted from the database`));
+
+      await User.findByIdAndUpdate(
+        userId,
+        {
+          $pull: { trips: tripId },
+        },
+        { safe: true, multi: false }
+      );
+
+      debug(chalk.greenBright(`Trip ${tripId} deleted from user's trips`));
+
+      res.status(200).json({ deleted_trip: deletedTrip });
+    }
+  } catch {
+    const error = customError(404, "Bad request", "Trip id not found");
+    next(error);
+  }
+};
+
+module.exports = { getUserTrips, addTrip, deleteTrip };

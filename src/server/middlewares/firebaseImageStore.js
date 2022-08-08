@@ -29,28 +29,34 @@ const saveImage = async (storage, file, fileName) => {
 };
 
 const firebaseImageStore = async (req, res, next) => {
-  const { files } = req;
+  const { file, files } = req;
 
-  if (files.length !== 0) {
-    const storage = getStorage(firebaseApp);
-    req.firebaseImagesUrls = [];
+  if (file || files) {
+    const imagesToUpload = file ? [file] : files;
 
-    req.imagePaths.map(async (image) => {
-      fs.readFile(
-        path.join("uploads", "images", image),
-        async (readError, readFile) => {
-          if (readError) {
-            next(readError);
+    if (imagesToUpload.length !== 0) {
+      const storage = getStorage(firebaseApp);
+      req.firebaseImagesUrls = [];
+
+      req.imagePaths.map(async (image) => {
+        fs.readFile(
+          path.join("uploads", "images", image),
+          async (readError, readFile) => {
+            if (readError) {
+              next(readError);
+            }
+
+            const firebaseFileURL = await saveImage(storage, readFile, image);
+            req.firebaseImagesUrls.push(firebaseFileURL);
+            if (req.firebaseImagesUrls.length === req.imagePaths.length) {
+              next();
+            }
           }
-
-          const firebaseFileURL = await saveImage(storage, readFile, image);
-          req.firebaseImagesUrls.push(firebaseFileURL);
-          if (req.firebaseImagesUrls.length === req.imagePaths.length) {
-            next();
-          }
-        }
-      );
-    });
+        );
+      });
+    } else {
+      next();
+    }
   } else {
     next();
   }

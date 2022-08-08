@@ -2,24 +2,29 @@ const fs = require("fs");
 const path = require("path");
 
 const saveImages = (req, res, next) => {
-  const { files } = req;
-  req.imagePaths = [];
+  const { file, files } = req;
 
-  if (files.length !== 0) {
-    files.forEach((fileToUpload) => {
-      const newFileName = `${Date.now()}-${fileToUpload.originalname}`;
-      fs.rename(
-        path.join("uploads", "images", fileToUpload.filename),
-        path.join("uploads", "images", newFileName),
-        (error) => {
-          if (error) {
-            next(error);
+  if (file || files) {
+    const imagesToUpload = file ? [file] : files;
+    req.imagePaths = [];
+
+    if (imagesToUpload.length !== 0) {
+      imagesToUpload.forEach((imageToUpload) => {
+        const newFileName = `${Date.now()}-${imageToUpload.originalname}`;
+        fs.rename(
+          path.join("uploads", "images", imageToUpload.filename),
+          path.join("uploads", "images", newFileName),
+          (error) => {
+            if (error) {
+              next(error);
+            }
           }
-        }
-      );
-      req.imagePaths.push(newFileName);
-    });
+        );
+        req.imagePaths.push(newFileName);
+      });
+    }
   }
+
   next();
 };
 

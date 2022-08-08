@@ -2,7 +2,11 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const { getTripLocations } = require("../controllers/locationsControllers");
-const { getUserTrips, addTrip } = require("../controllers/tripsControllers");
+const {
+  getUserTrips,
+  addTrip,
+  deleteTrip,
+} = require("../controllers/tripsControllers");
 const auth = require("../server/middlewares/auth");
 const firebaseImageStore = require("../server/middlewares/firebaseImageStore");
 const saveImages = require("../server/middlewares/saveImages");
@@ -21,10 +25,11 @@ tripsRouter.get("/:tripId", auth, getTripLocations);
 tripsRouter.post(
   "/",
   auth,
-  uploadLocationImages.array("image"),
+  uploadLocationImages.single("image"),
   saveImages,
   firebaseImageStore,
   addTrip
 );
+tripsRouter.delete("/:tripId", auth, deleteTrip);
 
 module.exports = tripsRouter;
